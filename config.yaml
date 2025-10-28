@@ -1,0 +1,63 @@
+# ====================================================================
+# Configuration for tf_ddrl_plus_plus Project
+# ====================================================================
+
+# 1. Deep Reinforcement Learning (DRL) General Settings
+drl:
+  total_timesteps: 5000000        # Total steps for Teacher training
+  learning_rate: 0.0003           # Adam optimizer learning rate
+  gamma: 0.99                     # Discount factor
+  lambda_gae: 0.95                # GAE-Lambda parameter for advantage estimation
+
+# 2. Proximal Policy Optimization (PPO) Settings
+ppo:
+  clip_ratio: 0.2                 # PPO clipping value (epsilon)
+  epochs: 10                      # Optimization epochs per data batch
+  value_coef: 0.5                 # Weight for the Value Loss term
+  entropy_coef: 0.01              # Weight for the Policy Entropy term
+  batch_size: 256                 # Batch size for PPO updates
+
+# 3. Prioritized Experience Replay (PER) Buffer Settings
+per:
+  capacity: 100000                # Max size of the replay buffer
+  alpha: 0.6                      # Exponent for prioritization (0=uniform, 1=full priority)
+  beta: 0.4                       # Initial Importance Sampling (IS) weight exponent
+
+# 4. Neural Network Architecture (arch) Settings
+arch:
+  # General settings for both Teacher (SGT) and Student (Simple)
+  encoder_type: "SGT"             # Defines which encoder to use in arch/*.py
+  d_model: 256                    # Dimension of node features/embeddings (d_k, d_v)
+  num_heads: 8                    # Number of attention heads
+  num_layers: 4                   # Number of SGT Encoder blocks
+  dff: 1024                       # Dimension of the Feed-Forward Network (4*d_model)
+
+# 5. IoHT Environment (env) Settings
+env:
+  max_tasks: 30                   # Max number of tasks in a scenario
+  max_resources: 10               # Max number of edge/cloud resources
+  max_time: 1000.0                # Max simulation time for normalization
+  action_space_size: 100          # Calculated as (max_tasks * max_resources)
+  
+# 6. Knowledge Distillation (KD) Settings
+distillation:
+  student_lr: 0.001               # Learning rate for the Student Network
+  kd_epochs: 5                    # Distillation optimization epochs
+  batch_size: 128                 # Batch size for KD updates
+  temperature: 3.0                # Temperature (T) for softening Teacher logits
+  kd_loss_weight: 0.8             # Weight for the KD (KL-Divergence) loss
+  rl_loss_weight: 0.2             # Weight for the RL (PPO-clipped) loss
+  # Path to the final trained Student model (used by main_edge_deployer.py)
+  final_student_model_path: "data/models/student_final_weights.h5"
+
+# 7. Logging and File Paths
+logging:
+  experiment_name: "DDRL_Plus_Plus_Initial_Run"
+  log_dir_base: "data/logs"       # Base directory for TensorBoard logs
+  save_interval: 10000            # Save model checkpoints every N steps
+  use_wandb: False                # Set to True to enable Weights & Biases
+
+# 8. Data Preprocessor Settings
+data_preprocessor:
+  task_feature_dim: 10            # Number of features extracted per task node
+  resource_feature_dim: 5         # Number of features extracted per resource node
